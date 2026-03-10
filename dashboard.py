@@ -4,10 +4,21 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
-file = "Omzet 2025 klanten.xlsm"
+# Excel laden: upload of lokaal bestand
+uploaded = st.file_uploader("Upload omzet Excel (of gebruik lokaal bestand)", type=["xlsx", "xlsm", "xls"])
+if uploaded:
+    file = uploaded
+else:
+    file = "Omzet 2025 klanten.xlsm"
 
-# Excel laden
-df = pd.read_excel(file, sheet_name=0, header=None)
+try:
+    df = pd.read_excel(file, sheet_name=0, header=None)
+except FileNotFoundError:
+    st.warning("Geen bestand gevonden. Upload een omzet Excel-bestand (.xlsx of .xlsm) om te beginnen.")
+    st.stop()
+except Exception as e:
+    st.error(f"Fout bij laden: {e}")
+    st.stop()
 
 header_row = 13
 data = df.iloc[header_row:].copy()
